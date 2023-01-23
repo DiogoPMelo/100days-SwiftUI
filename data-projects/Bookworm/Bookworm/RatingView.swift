@@ -1,0 +1,67 @@
+//
+//  RatingView.swift
+//  Bookworm
+//
+//  Created by Diogo Melo on 5/10/20.
+//  Copyright © 2020 Diogo Melo. All rights reserved.
+//
+
+import SwiftUI
+
+struct RatingView: View {
+    @Binding var rating: Int
+    
+    var label = ""
+
+    var maximumRating = 5
+
+    var offImage: Image?
+    var onImage = Image(systemName: "star.fill")
+
+    var offColor = Color.gray
+    var onColor = Color.yellow
+    
+    var body: some View {
+        HStack {
+            if !label.isEmpty {
+                Text(label)
+            }
+
+            ForEach(1..<maximumRating + 1) { number in
+                self.image(for: number)
+                    .foregroundColor(number > self.rating ? self.offColor : self.onColor)
+                    .onTapGesture {
+                        self.rating = number
+                    }
+                .accessibility(label: Text("\(number == 1 ? "1 star" : "\(number) stars")"))
+                .accessibility(removeTraits: .isImage)
+                .accessibility(addTraits: number > self.rating ? .isButton : [.isButton, .isSelected])
+                    // my manual attempt:
+//                .accessibility(label: Text(self.accessibilityLabel(for:number)))
+            }
+        }
+    }
+    
+    func image(for number: Int) -> Image {
+        if number > rating {
+                        return offImage ?? onImage
+        } else {
+                        return onImage
+        }
+    }
+
+    // my manual attempt of accessibility
+    func accessibilityLabel (for number: Int) -> String {
+        if number > rating {
+        return "\(number) stars"
+        } else {
+            return "selected \(number) stars"
+        }
+    }
+}
+
+struct RatingView_Previews: PreviewProvider {
+    static var previews: some View {
+        RatingView(rating: .constant(4))
+    }
+}
